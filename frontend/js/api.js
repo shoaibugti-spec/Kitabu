@@ -1,9 +1,11 @@
 // Kitabu — API client
 // Backend مقامی طور پر چل رہا ہو تو یہ localhost:8000 استعمال کرتا ہے۔
 // GitHub Pages یا کسی اور جگہ ہوسٹ کرتے وقت یہ URL بدل دیں۔
-const API_BASE = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+// When served by FastAPI at /app, use the same origin. When opened directly
+// from disk, fall back to the local development API.
+const API_BASE = location.protocol === "file:"
   ? "http://localhost:8000"
-  : "http://localhost:8000"; // ← اپنا ڈپلائے شدہ بیک اینڈ URL یہاں لکھیں
+  : "";
 
 async function apiGet(path) {
   const res = await fetch(`${API_BASE}${path}`);

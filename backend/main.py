@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 try:
     from config import CORS_ORIGINS, EVERYAYAH_CDN, DEFAULT_RECITER, RECITERS
@@ -28,6 +31,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+if FRONTEND_DIR.exists():
+    app.mount("/app", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
+
 db = None
 search_engine = None
 
@@ -51,6 +58,16 @@ def ensure_loaded():
             status_code=503,
             detail="ڈیٹا ابھی لوڈ نہیں ہوا۔ پہلے backend/data/download.py اور convert.py چلائیں۔",
         )
+
+
+@app.get("/")
+def root():
+    return {
+        "name": "کِتٰٰبُ",
+        "description": "پورا قرآن، صرف قرآن",
+        "verses_loaded": db.count() if db else 0,
+        "frontend": "/app",
+    }
 
 
 @app.get("/health")
