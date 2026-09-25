@@ -104,9 +104,14 @@ document.getElementById("ask-btn").addEventListener("click", async () => {
   out.innerHTML = "⏳ تلاش ہو رہی ہے...";
   try {
     const data = await KitabuAPI.ask(q);
+    if (data.type === "claim_detected") {
+      out.innerHTML = `<div class="note-box">📌 ${data.message}</div>`;
+      return;
+    }
+    const verses = data.verses || data.results || [];
     out.innerHTML = data.found
-      ? data.results.map(verseCard).join("")
-      : `<div class="note-box">${data.message}</div>`;
+      ? `<div class="note-box">✅ ${data.message}</div>${verses.map(verseCard).join("")}`
+      : `<div class="note-box">❌ ${data.message}</div>`;
   } catch (e) {
     out.innerHTML = errorBox(e.message);
   }
@@ -122,11 +127,13 @@ document.getElementById("verify-btn").addEventListener("click", async () => {
   out.innerHTML = "⏳ تصدیق ہو رہی ہے...";
   try {
     const data = await KitabuAPI.verify(s, a, claim);
+    const verdictClass = data.verdict === "موجود ہے" ? "verdict-yes" : "verdict-no";
     out.innerHTML = `
       ${verseCard({ surah: data.surah, ayah: data.ayah, arabic: data.arabic, ur: data.ur, en: data.en })}
       <div class="note-box">
-        <strong>موازنہ:</strong> ${data.note}<br>
-        <small>${data.disclaimer}</small>
+        <strong class="${verdictClass}">نتیجہ: ${data.verdict}</strong><br>
+        <span>${data.explanation}</span><br>
+        <small>یہ خودکار لفظی موازنہ ہے؛ اصل عربی متن اور ترجمہ کو خود بھی ملاحظہ کریں۔</small>
       </div>`;
   } catch (e) {
     out.innerHTML = errorBox(e.message);

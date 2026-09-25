@@ -10,12 +10,14 @@ try:
     from database import QuranDB
     from search import QuranSearch
     from verify import verify_claim
+    from ai import QuranAI
 except ImportError:
     from backend.config import CORS_ORIGINS, EVERYAYAH_CDN, DEFAULT_RECITER, RECITERS
     from backend.models import AskRequest, VerifyRequest
     from backend.database import QuranDB
     from backend.search import QuranSearch
     from backend.verify import verify_claim
+    from backend.ai import QuranAI
 
 app = FastAPI(
     title="Kitabu API",
@@ -37,19 +39,22 @@ if FRONTEND_DIR.exists():
 
 db = None
 search_engine = None
+quran_ai = None
 
 
 @app.on_event("startup")
 def load_data():
-    global db, search_engine
+    global db, search_engine, quran_ai
     try:
         db = QuranDB()
         search_engine = QuranSearch(db)
+        quran_ai = QuranAI(search_engine)
         print(f"✅ ڈیٹا لوڈ ہوا: {db.count()} آیات، {db.total_surahs()} سورتیں")
     except FileNotFoundError as e:
         print(f"⚠️  {e}")
         db = None
         search_engine = None
+        quran_ai = None
 
 
 def ensure_loaded():
@@ -113,22 +118,15 @@ def get_ayah(surah_num: int, ayah_num: int):
 @app.post("/ask")
 def ask(req: AskRequest):
     ensure_loaded()
-    results = search_engine.find(req.question, lang=req.lang)
-    if not results:
-        return {
-            "found": False,
-            "message": "اس مخصوص موضوع پر صریح آیت نہیں ملی۔",
-            "results": [],
-        }
-    return {"found": True, "results": results}
+    return quran_ai.answer(req.question, lang=req.lang)
 
 
 @app.post("/verify")
 def verify(req: VerifyRequest):
     ensure_loaded()
     result = verify_claim(db, req.surah, req.ayah, req.claim, req.lang)
-    if not result:
-        raise HTTPException(status_code=404, detail="بتائی گئی آیت نہیں ملی")
+    if not result.get("found_verse"):
+        raise HTTPException(status_code=404, detail=result["explanation"])
     return result
 
 

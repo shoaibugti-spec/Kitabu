@@ -8,7 +8,9 @@ class AskRequest(BaseModel):
 
 
 class VerifyRequest(BaseModel):
-    surah: int = Field(..., ge=1, le=114)
+    # Keep out-of-range positive numbers so the API can return its clear
+    # "آیت موجود نہیں" verification response instead of a generic 422.
+    surah: int = Field(..., ge=1)
     ayah: int = Field(..., ge=1, le=286)
     claim: str = Field(..., min_length=1, max_length=1000)
     lang: str = "ur"

@@ -1,40 +1,90 @@
-"""
-دعویٰ کی تصدیق: یہ ماڈیول کسی دعوے کو خود "درست" یا "غلط" قرار نہیں دیتا۔
-یہ صرف بتائی گئی آیت کا اصل متن اور ترجمہ دکھاتا ہے، اور اس دعوے میں
-استعمال ہونے والے الفاظ کا اس آیت کے متن سے میل جانچتا ہے — تاکہ
-صارف خود موازنہ کر سکے۔ AI کوئی فیصلہ نہیں سناتا۔
-"""
+"""دعویٰ کی تصدیق — صرف قرآن کے متن اور تراجم سے لفظی موازنہ۔"""
+
+import re
+
+AR_DIACRITICS = re.compile(r"[\u0617-\u061A\u064B-\u0652\u0670\u0640]")
+
+
+def normalize(text: str) -> str:
+    text = AR_DIACRITICS.sub("", text or "").lower()
+    return (
+        text.replace("أ", "ا")
+        .replace("إ", "ا")
+        .replace("آ", "ا")
+        .replace("ى", "ي")
+        .replace("ة", "ه")
+        .replace("ؤ", "و")
+        .replace("ئ", "ي")
+        .replace("ٱ", "ا")
+    )
 
 
 def verify_claim(db, surah: int, ayah: int, claim: str, lang: str = "ur"):
     verse = db.get(surah, ayah)
     if not verse:
-        return None
+        return {
+            "found_verse": False,
+            "surah": surah,
+            "ayah": ayah,
+            "claim": claim,
+            "verdict": "آیت موجود نہیں",
+            "explanation": (
+                "یہ آیت قرآن میں موجود نہیں ہے۔ "
+                f"سورہ {surah} میں آیت {ayah} موجود نہیں ہے۔ "
+                "براہ کرم صحیح آیت نمبر دیں۔"
+            ),
+        }
 
-    claim_words = [w for w in claim.strip().lower().split() if len(w) > 2]
+    words = [w for w in claim.strip().split() if len(w) > 2]
+    if not words:
+        return {
+            "found_verse": True,
+            "surah": surah,
+            "ayah": ayah,
+            "arabic": verse["text"],
+            "ur": verse.get("ur", ""),
+            "en": verse.get("en", ""),
+            "claim": claim,
+            "verdict": "غیر واضح",
+            "explanation": "دعویٰ بہت مختصر ہے، موازنہ نہیں ہو سکا۔",
+            "confidence": 0.0,
+            "matched_words": [],
+        }
 
-    verse_text_for_match = " ".join(
-        filter(None, [verse.get("ur", ""), verse.get("en", "").lower()])
-    )
+    text_ar = normalize(verse["text"])
+    text_ur = normalize(verse.get("ur", ""))
+    text_en = verse.get("en", "").lower()
+    matched_words = [
+        word for word in words
+        if normalize(word) in text_ar
+        or normalize(word) in text_ur
+        or word.lower() in text_en
+    ]
+    confidence = len(matched_words) / len(words)
 
-    matched = [w for w in claim_words if w in verse_text_for_match.lower()]
-    match_ratio = (len(matched) / len(claim_words)) if claim_words else 0.0
-
-    if match_ratio >= 0.5:
-        note = "دعوے کے کئی الفاظ اس آیت کے ترجمے میں ملتے ہیں۔ نیچے اصل متن پڑھ کر خود موازنہ کریں۔"
-    elif match_ratio > 0:
-        note = "دعوے کے کچھ الفاظ اس آیت سے ملتے ہیں، مگر مکمل میل نہیں۔ نیچے اصل متن پڑھ کر خود فیصلہ کریں۔"
+    if confidence >= 0.5:
+        verdict = "موجود ہے"
+        explanation = (
+            "جی ہاں، اس آیت میں آپ کے دعوے کے مطابق بات پائی گئی۔\n"
+            f"ملنے والے الفاظ: {', '.join(matched_words)}"
+        )
     else:
-        note = "دعوے کے الفاظ اس آیت کے ترجمے سے براہ راست نہیں ملتے۔ ممکن ہے حوالہ درست نہ ہو، یا معنی مختلف زاویے سے بیان ہوا ہو۔ نیچے اصل متن پڑھیں۔"
+        verdict = "موجود نہیں ہے"
+        explanation = (
+            "نہیں، اس آیت میں آپ کے دعوے کے مطابق بات نہیں پائی گئی۔\n"
+            "آپ نے جو کہا وہ اس آیت میں نہیں ہے۔ خود دیکھ لیں۔"
+        )
 
     return {
+        "found_verse": True,
         "surah": surah,
         "ayah": ayah,
         "arabic": verse["text"],
         "ur": verse.get("ur", ""),
         "en": verse.get("en", ""),
         "claim": claim,
-        "match_ratio": round(match_ratio, 2),
-        "note": note,
-        "disclaimer": "یہ خودکار لفظی موازنہ ہے، مذہبی فتویٰ نہیں۔ درست فہم کے لیے اصل عربی متن اور معتبر ترجمہ ہی حتمی حوالہ ہیں۔",
+        "verdict": verdict,
+        "explanation": explanation,
+        "confidence": round(confidence, 2),
+        "matched_words": matched_words,
     }
