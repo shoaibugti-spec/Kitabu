@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv/
+venv/
+env/
+.DS_Store
+*.log
+backend/data/quran_ar.json
+backend/data/quran_ar.txt
+backend/data/translations/*.txt
+backend/data/roots.json
+*.zip
+.vscode/
+.idea/
