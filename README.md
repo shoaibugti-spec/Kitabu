@@ -100,3 +100,8 @@ Health: /health
 اہم: repository root پر `pip install -r ../requirements.txt` اور `uvicorn main:app` استعمال نہ کریں؛ requirements root میں ہے اور FastAPI app `backend.main:app` میں ہے۔ Build کے دوران Quran data تیار ہوتا ہے، اس لیے Render Shell میں دوبارہ download/convert چلانے کی ضرورت نہیں۔
 
 Render پر deploy ہونے کے بعد frontend: `/app`
+
+
+## Quran reader
+
+`/app/reader.html` میں سفید reading mode، 114 سورتوں کا انتخاب، چار font sizes، 1x/2x/3x auto-scroll، touch/pointer drag pause-resume، per-ayah EveryAyah audio اور copy control موجود ہیں۔ Main menu کا **پڑھنا** بٹن اسی reader پر لے جاتا ہے۔
