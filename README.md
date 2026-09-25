@@ -85,3 +85,18 @@ MIT — کوڈ کے لیے۔
 ---
 
 نیت: صرف قرآن کی خدمت۔
+
+
+## Render deployment
+
+Repository root کو Render Web Service کے طور پر استعمال کریں۔ `render.yaml` میں درست build، start اور health-check commands موجود ہیں:
+
+```text
+Build: pip install -r requirements.txt && cd backend/data && python download.py && python convert.py
+Start: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+Health: /health
+```
+
+اہم: repository root پر `pip install -r ../requirements.txt` اور `uvicorn main:app` استعمال نہ کریں؛ requirements root میں ہے اور FastAPI app `backend.main:app` میں ہے۔ Build کے دوران Quran data تیار ہوتا ہے، اس لیے Render Shell میں دوبارہ download/convert چلانے کی ضرورت نہیں۔
+
+Render پر deploy ہونے کے بعد frontend: `/app`
