@@ -1,4 +1,4 @@
-// Kitabu — Client-side data (no backend)
+// Kitabu — client-side data (no backend)
 
 let QURAN_DATA = null;
 let QURAN_BY_ID = null;
@@ -102,7 +102,9 @@ function verifyClaim(surah, ayah, claim) {
   let matches = 0;
   for (const w of words) {
     const wn = normalizeAr(w);
-    if (textAr.includes(wn) || textUr.includes(wn) || textEn.includes(w.toLowerCase())) matches++;
+    if (textAr.includes(wn) || textUr.includes(wn) || textEn.includes(w.toLowerCase())) {
+      matches++;
+    }
   }
   const conf = matches / words.length;
   const found = conf >= 0.5;
@@ -120,7 +122,7 @@ function askQuranAI(question) {
   const claimMarkers = ["قرآن میں یہ ہے", "قرآن میں ہے", "اسلام میں", "اللہ نے کہا", "نبی نے کہا", "حدیث میں"];
   if (claimMarkers.some(m => question.includes(m))) {
     return { type: "claim_detected", found: false,
-      message: "لگتا ہے آپ قرآن کے بارے میں کوئی بات کہہ رہے ہیں۔ براہ کرم آیت نمبر دیں تاکہ میں تصدیق کر سکوں۔",
+      message: "لگتا ہے آپ قرآن کے بارے میں کوئی بات کہہ رہے ہیں۔ براہ کرم آیت نمبر دیں۔",
       verses: [] };
   }
   const results = searchQuran(question);
