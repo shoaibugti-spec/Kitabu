@@ -1,241 +1,168 @@
-:root {
-  --green: #0f6e4f;
-  --green-dark: #0a4d37;
-  --gold: #c9a227;
-  --bg: #faf8f2;
-  --card: #ffffff;
-  --text: #1e2a24;
-  --muted: #6b7a72;
-  --border: #e3ddc9;
-  --radius: 14px;
-}
-
-* { box-sizing: border-box; }
-
+/* Reset & Base */
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  margin: 0;
-  font-family: "Noto Nastaliq Urdu", "Jameel Noori Nastaleeq", "Traditional Arabic", Tahoma, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
+  line-height: 1.6;
+  direction: rtl; /* For Urdu support */
 }
 
+/* Header */
 .topbar {
-  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  background: #2c3e50;
   color: white;
+  padding: 1rem;
   text-align: center;
-  padding: 1.5rem 1rem 1.2rem;
-  border-bottom: 4px solid var(--gold);
 }
+.topbar h1 { font-size: 2rem; margin-bottom: 0.2rem; }
+.tagline { font-size: 0.9rem; opacity: 0.8; }
 
-.topbar h1 {
-  margin: 0;
-  font-size: 2.2rem;
-  letter-spacing: 1px;
-}
-
-.tagline {
-  margin: 0.3rem 0 0;
-  opacity: 0.9;
-  font-size: 1rem;
-}
-
+/* Main Container */
 #app {
-  flex: 1;
-  max-width: 720px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 0 15px;
 }
 
-.view { display: none; }
+/* Views */
+.view { display: none; animation: fadeIn 0.3s ease; }
 .view.active { display: block; }
 
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Menu Grid */
 .menu-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
 }
-
 .menu-btn {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 2rem 1rem;
-  font-size: 1.2rem;
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 12px;
+  padding: 30px 15px;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-}
-
-.menu-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(15,110,79,0.15);
-  border-color: var(--green);
-}
-
-.menu-btn .icon { font-size: 2.2rem; }
-
-.status-line {
+  transition: all 0.2s;
   text-align: center;
-  color: var(--muted);
-  margin-top: 2rem;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2c3e50;
 }
-
-.back-btn {
-  background: none;
-  border: none;
-  color: var(--green-dark);
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 0.3rem 0;
-  margin-bottom: 0.8rem;
+.menu-btn:hover {
+  border-color: #3498db;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
+.menu-btn .icon { display: block; font-size: 2.5rem; margin-bottom: 10px; }
 
-h2 { color: var(--green-dark); }
-
-.hint { color: var(--muted); line-height: 1.7; }
-
-.row {
+/* Forms */
+.form-row {
   display: flex;
   flex-wrap: wrap;
+  gap: 10px;
   align-items: center;
-  gap: 0.6rem;
-  margin: 1rem 0;
-}
-
-.row label { color: var(--muted); font-size: 0.95rem; }
-
-input[type="number"], select {
-  padding: 0.5rem 0.7rem;
-  border: 1px solid var(--border);
+  margin-bottom: 15px;
+  background: white;
+  padding: 15px;
   border-radius: 8px;
-  font-size: 1rem;
-  width: 90px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
-
-select { width: auto; }
-
-button {
-  background: var(--green);
+label { font-weight: bold; min-width: 60px; }
+input[type="number"], select, textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  flex-grow: 1;
+}
+textarea { width: 100%; resize: vertical; min-height: 80px; margin-bottom: 10px; }
+.primary-btn {
+  background: #3498db;
   color: white;
   border: none;
-  padding: 0.55rem 1.1rem;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 10px 20px;
+  border-radius: 6px;
   cursor: pointer;
-}
-
-button:hover { background: var(--green-dark); }
-
-textarea {
-  width: 100%;
-  min-height: 90px;
-  padding: 0.8rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  font-size: 1.05rem;
-  font-family: inherit;
-  resize: vertical;
-  margin-bottom: 0.6rem;
-}
-
-.tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin: 1rem 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.tab-btn {
-  background: none;
-  color: var(--muted);
-  border: none;
-  border-bottom: 3px solid transparent;
-  border-radius: 0;
-  padding: 0.6rem 0.9rem;
-}
-
-.tab-btn.active {
-  color: var(--green-dark);
-  border-bottom-color: var(--green);
   font-weight: bold;
+  transition: background 0.2s;
+}
+.primary-btn:hover { background: #2980b9; }
+.back-btn {
+  background: transparent;
+  border: 1px solid #ccc;
+  padding: 5px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  color: #666;
+}
+.back-btn:hover { background: #eee; }
+
+/* Verses Display */
+.verses-list { margin-top: 20px; }
+.verse-card {
+  background: white;
+  border-right: 4px solid #f39c12;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.verse-ref { font-size: 0.85rem; color: #7f8c8d; margin-bottom: 8px; }
+.verse-ar {
+  font-family: 'Amiri', 'Traditional Arabic', serif;
+  font-size: 1.6rem;
+  line-height: 2.2;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  direction: rtl;
+}
+.verse-ur { font-size: 1.1rem; color: #34495e; margin-bottom: 5px; }
+.verse-en { font-size: 0.95rem; color: #7f8c8d; font-style: italic; }
+
+/* Notes & Errors */
+.note-box {
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+}
+.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+.error-box {
+  background: #f8d7da; color: #721c24;
+  padding: 15px; border-radius: 8px; margin: 10px 0;
+  border: 1px solid #f5c6cb;
 }
 
+/* Tabs */
+.tabs { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 2px solid #eee; }
+.tab-btn {
+  background: transparent; border: none; padding: 10px 20px;
+  cursor: pointer; font-weight: bold; color: #7f8c8d;
+  border-bottom: 3px solid transparent;
+}
+.tab-btn.active { color: #3498db; border-bottom-color: #3498db; }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
 
-.verses-list { margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.9rem; }
-
-.verse-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1rem 1.2rem;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-}
-
-.verse-ref {
-  color: var(--gold);
-  font-weight: bold;
-  font-size: 0.85rem;
-  margin-bottom: 0.4rem;
-}
-
-.verse-ar {
-  font-size: 1.5rem;
-  line-height: 2.4;
-  text-align: right;
-  margin-bottom: 0.6rem;
-  color: var(--green-dark);
-}
-
-.verse-ur {
-  font-size: 1.05rem;
-  line-height: 1.9;
-  color: var(--text);
-}
-
-.verse-en {
-  font-size: 0.95rem;
-  line-height: 1.7;
-  color: var(--muted);
-  direction: ltr;
-  text-align: left;
-  margin-top: 0.4rem;
-}
-
-.note-box {
-  background: #fdf6e3;
-  border: 1px solid var(--gold);
-  border-radius: 10px;
-  padding: 0.8rem 1rem;
-  margin-top: 0.6rem;
-  font-size: 0.9rem;
-  color: #6b5a10;
-}
-
+/* Footer */
 .footer {
   text-align: center;
-  padding: 1rem;
-  color: var(--muted);
-  font-size: 0.8rem;
-  border-top: 1px solid var(--border);
+  padding: 20px;
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  margin-top: 40px;
+  border-top: 1px solid #eee;
 }
 
-.error-box {
-  background: #fdecea;
-  border: 1px solid #e2a29c;
-  color: #7a1f1a;
-  padding: 0.8rem 1rem;
-  border-radius: 10px;
+/* Status Line */
+.status-line {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: #27ae60;
 }
