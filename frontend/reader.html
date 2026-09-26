@@ -14,99 +14,70 @@
     body { overflow: hidden; }
     .topbar { position: fixed; inset: 0 0 auto; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 10px 15px; background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
     .title-row, .controls, .font-size-group, .ayah-buttons, .ayah-actions { display: flex; align-items: center; gap: 8px; }
-    .title-row { gap: 12px; }
     .topbar h2 { margin: 0; color: #0f172a; font-size: 1.2rem; }
-    button, select { font: inherit; }
-    button { cursor: pointer; }
+    button, select { font: inherit; cursor: pointer; }
     .ctrl-btn { border: 0; border-radius: 8px; padding: 8px 14px; background: #0f172a; color: #fff; font-weight: 700; }
-    .ctrl-btn:hover { background: #1e293b; }
     .ctrl-btn.playing { background: #16a34a; }
     .font-size-group { padding: 4px; border-radius: 8px; background: #e2e8f0; }
     .font-size-group button { border: 0; border-radius: 6px; padding: 4px 10px; background: transparent; font-weight: 700; }
     .font-size-group button.active { background: #0f172a; color: #fff; }
-    .surah-select { max-width: 180px; padding: 6px 10px; border: 2px solid #e2e8f0; border-radius: 8px; background: #fff; color: #000; }
-    .reader { position: absolute; inset: 70px 0 0; overflow-y: auto; padding: 30px 20px 200px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
-    .reader::-webkit-scrollbar { width: 8px; }
-    .reader::-webkit-scrollbar-thumb { border-radius: 4px; background: #94a3b8; }
-    .ayah { max-width: 800px; margin: 0 auto 40px; padding: 20px; border-radius: 12px; transition: background .3s; }
-    .ayah:hover { background: #f8fafc; }
+    .surah-select { max-width: 180px; padding: 6px 10px; border: 2px solid #e2e8f0; border-radius: 8px; background: #fff; }
+    .reader { position: absolute; inset: 70px 0 0; overflow-y: auto; padding: 30px 20px 200px; scroll-behavior: smooth; }
+    .ayah { max-width: 800px; margin: 0 auto 40px; padding: 20px; border-radius: 12px; }
     .ayah.playing { background: #fef3c7; box-shadow: 0 0 0 2px #fbbf24; }
-    .arabic { color: #000; direction: rtl; text-align: right; margin-bottom: 18px; font-family: 'Amiri Quran', 'Amiri', serif; font-size: var(--arabic-size); line-height: 2.6; }
+    .arabic { color: #000; direction: rtl; text-align: right; margin-bottom: 18px; font-family: 'Amiri Quran', serif; font-size: var(--arabic-size); line-height: 2.6; }
     .translation-ur { color: #1e293b; direction: rtl; text-align: right; margin-bottom: 10px; font-size: var(--urdu-size); line-height: 2.2; }
     .translation-en { color: #475569; direction: ltr; text-align: left; margin-bottom: 15px; font-family: Georgia, serif; font-size: var(--en-size); line-height: 1.7; }
     .ayah-actions { justify-content: space-between; margin-top: 12px; padding-top: 12px; border-top: 1px solid #e2e8f0; }
     .ref { color: #64748b; font-size: .9rem; font-weight: 700; }
     .ayah-buttons button { border: 0; border-radius: 6px; padding: 6px 12px; background: #f1f5f9; }
-    .ayah-buttons button:hover { background: #e2e8f0; }
     .loading { padding: 40px; color: #64748b; text-align: center; font-size: 1.2rem; }
-    .auto-indicator { position: fixed; z-index: 20; right: 50%; bottom: 20px; display: none; align-items: center; gap: 10px; transform: translateX(50%); padding: 10px 20px; border-radius: 30px; background: #0f172a; color: #fff; box-shadow: 0 4px 12px #0003; }
-    .auto-indicator.show { display: flex; }
-    .speed-btn { border: 0; border-radius: 12px; padding: 4px 10px; background: #fbbf24; color: #0f172a; font-weight: 700; }
-    @media (max-width: 600px) { .topbar { padding: 8px 10px; } .topbar h2 { font-size: 1rem; } .ctrl-btn { padding: 6px 10px; font-size: .85rem; } .controls { justify-content: flex-end; } .reader { padding: 20px 12px 200px; } .ayah { padding: 15px; margin-bottom: 30px; } .arabic { line-height: 2.4; } }
+    @media (max-width: 600px) { .topbar { padding: 8px 10px; } .topbar h2 { font-size: 1rem; } .reader { padding: 20px 12px 200px; } .ayah { padding: 15px; margin-bottom: 30px; } }
   </style>
 </head>
 <body>
   <header class="topbar">
     <div class="title-row"><button class="ctrl-btn" onclick="location.href='./'">← واپس</button><h2 id="surahTitle">سورہ الفاتحہ</h2></div>
     <div class="controls">
-      <select class="surah-select" id="surahSelect" aria-label="سورہ منتخب کریں"></select>
-      <div class="font-size-group" aria-label="فونٹ سائز">
-        <button id="fs-s" onclick="setFontSize('s')">ا</button><button id="fs-m" onclick="setFontSize('m')">ا</button><button id="fs-l" onclick="setFontSize('l')">ا</button><button id="fs-xl" onclick="setFontSize('xl')">ا</button>
+      <select class="surah-select" id="surahSelect"></select>
+      <div class="font-size-group">
+        <button id="fs-s" onclick="setFontSize('s')">ا</button>
+        <button id="fs-m" onclick="setFontSize('m')">ا</button>
+        <button id="fs-l" onclick="setFontSize('l')">ا</button>
+        <button id="fs-xl" onclick="setFontSize('xl')">ا</button>
       </div>
-      <button class="ctrl-btn" id="playBtn" onclick="toggleAutoScroll()">▶ خودکار</button>
     </div>
   </header>
   <main class="reader" id="reader"><div class="loading">لوڈ ہو رہا ہے...</div></main>
-  <div class="auto-indicator" id="autoInd"><span>🔽 خودکار سکرول</span><button class="speed-btn" id="speedLbl" onclick="changeSpeed()">1x</button></div>
+
+  <script src="js/api.js"></script>
   <script>
     const NAMES = ['الفاتحہ','البقرہ','آل عمران','النساء','المائدہ','الانعام','الاعراف','الانفال','التوبہ','یونس','ہود','یوسف','الرعد','ابراہیم','الحجر','النحل','الاسراء','الکہف','مریم','طہ','الانبیاء','الحج','المومنون','النور','الفرقان','الشعراء','النمل','القصص','العنکبوت','الروم','لقمان','السجدہ','الاحزاب','سبا','فاطر','یٰسین','الصافات','ص','الزمر','المومن','حم السجدہ','الشوری','الزخرف','الدخان','الجاثیہ','الاحقاف','محمد','الفتح','الحجرات','ق','الذاریات','الطور','النجم','القمر','الرحمن','الواقعہ','الحدید','المجادلہ','الحشر','الممتحنہ','الصف','الجمعہ','المنافقون','التغابن','الطلاق','التحریم','الملک','القلم','الحاقہ','المعارج','نوح','الجن','المزمل','المدثر','القیامہ','الانسان','المرسلات','النبا','النازعات','عبس','التکویر','الانفطار','المطففین','الانشقاق','البروج','الطارق','الاعلی','الغاشیہ','الفجر','البلد','الشمس','اللیل','الضحی','الشرح','التین','العلق','القدر','البینہ','الزلزال','العادیات','القارعہ','التکاثر','العصر','الہمزہ','الفیل','قریش','الماعون','الکوثر','الکافرون','النصر','اللہب','الاخلاص','الفلق','الناس'];
     const FONT_SIZES = { s: ['1.6rem','1rem','.9rem'], m: ['2.2rem','1.3rem','1.05rem'], l: ['2.9rem','1.7rem','1.2rem'], xl: ['3.6rem','2.1rem','1.35rem'] };
-    let autoScrolling = false, scrollSpeed = 1, scrollTimer = null, currentAudio = null, dragPaused = false;
-
-    // ===== ڈیٹا لوڈ (client-side) =====
-    let QURAN_BY_SURAH = null;
-    let QURAN_READY = null;
-
-    async function ensureData() {
-      if (QURAN_BY_SURAH) return;
-      if (QURAN_READY) return QURAN_READY;
-
-      QURAN_READY = (async () => {
-        const res = await fetch('data/quran_ar.json');
-        if (!res.ok) throw new Error('قرآن کا ڈیٹا نہیں ملا (data/quran_ar.json)');
-        const data = await res.json();
-        QURAN_BY_SURAH = {};
-        for (const v of data) {
-          if (!QURAN_BY_SURAH[v.surah]) QURAN_BY_SURAH[v.surah] = [];
-          QURAN_BY_SURAH[v.surah].push(v);
-        }
-      })();
-      return QURAN_READY;
-    }
-
     const reader = document.getElementById('reader');
-    const esc = value => String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-    function setFontSize(size) { const [ar,ur,en] = FONT_SIZES[size]; document.documentElement.style.setProperty('--arabic-size', ar); document.documentElement.style.setProperty('--urdu-size', ur); document.documentElement.style.setProperty('--en-size', en); document.querySelectorAll('.font-size-group button').forEach(b => b.classList.remove('active')); document.getElementById('fs-'+size).classList.add('active'); localStorage.setItem('kitabu_font', size); }
-    function stopScroll() { clearInterval(scrollTimer); scrollTimer = null; }
-    function startScroll() { stopScroll(); const ms = {1:40,2:20,3:10}[scrollSpeed]; const px = {1:.5,2:1,3:2}[scrollSpeed]; scrollTimer = setInterval(() => { reader.scrollTop += px; if (reader.scrollTop + reader.clientHeight >= reader.scrollHeight - 5) toggleAutoScroll(false); }, ms); }
-    function toggleAutoScroll(force) { autoScrolling = typeof force === 'boolean' ? force : !autoScrolling; const btn = document.getElementById('playBtn'); document.getElementById('autoInd').classList.toggle('show', autoScrolling); btn.classList.toggle('playing', autoScrolling); btn.textContent = autoScrolling ? '⏸ رکیں' : '▶ خودکار'; autoScrolling ? startScroll() : stopScroll(); }
-    function changeSpeed() { scrollSpeed = scrollSpeed % 3 + 1; document.getElementById('speedLbl').textContent = scrollSpeed + 'x'; if (autoScrolling && !dragPaused) startScroll(); }
-    reader.addEventListener('pointerdown', () => { if (autoScrolling) { dragPaused = true; stopScroll(); } });
-    window.addEventListener('pointerup', () => { if (dragPaused) { dragPaused = false; setTimeout(() => { if (autoScrolling) startScroll(); }, 1000); } });
+    function setFontSize(s) {
+      const [ar, ur, en] = FONT_SIZES[s];
+      document.documentElement.style.setProperty('--arabic-size', ar);
+      document.documentElement.style.setProperty('--urdu-size', ur);
+      document.documentElement.style.setProperty('--en-size', en);
+      document.querySelectorAll('.font-size-group button').forEach(b => b.classList.remove('active'));
+      document.getElementById('fs-' + s).classList.add('active');
+      localStorage.setItem('kitabu_font', s);
+    }
 
     async function loadSurah(n) {
       const number = Number(n);
       reader.innerHTML = '<div class="loading">لوڈ ہو رہا ہے...</div>';
       try {
-        await ensureData();
-        const verses = QURAN_BY_SURAH[number] || [];
-        if (!verses.length) throw new Error('سورہ نہیں ملی');
+        const data = await KitabuAPI.surah(number);
+        if (!data.verses.length) throw new Error('سورہ نہیں ملی');
         document.getElementById('surahTitle').textContent = `سورہ ${NAMES[number - 1] || number}`;
         let html = number !== 1 && number !== 9
           ? '<div class="ayah"><div class="arabic" style="text-align:center">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div></div>'
           : '';
-        html += verses.map(v => `
+        html += data.verses.map(v => `
           <article class="ayah" id="ayah-${v.surah}-${v.ayah}">
             <div class="arabic">${esc(v.text)}</div>
             ${v.ur ? `<div class="translation-ur">${esc(v.ur)}</div>` : ''}
@@ -115,47 +86,45 @@
               <span class="ref">سورہ ${v.surah}، آیت ${v.ayah}</span>
               <div class="ayah-buttons">
                 <button data-play="${v.surah}:${v.ayah}">🔊 سنیں</button>
-                <button data-copy="${v.surah}:${v.ayah}">📋 کاپی</button>
               </div>
             </div>
           </article>`).join('');
         reader.innerHTML = html;
         reader.scrollTop = 0;
-      } catch (error) {
-        reader.innerHTML = `<div class="loading">⚠️ ${esc(error.message)}</div>`;
+      } catch (e) {
+        reader.innerHTML = `<div class="loading">⚠️ ${esc(e.message)}</div>`;
       }
     }
 
-    function playAyah(surah, ayah) {
+    let currentAudio = null;
+    reader.addEventListener('click', e => {
+      const play = e.target.closest('[data-play]');
+      if (!play) return;
       if (currentAudio) { currentAudio.pause(); currentAudio = null; }
       document.querySelectorAll('.ayah.playing').forEach(el => el.classList.remove('playing'));
-      const element = document.getElementById(`ayah-${surah}-${ayah}`);
-      if (element) { element.classList.add('playing'); element.scrollIntoView({behavior:'smooth', block:'center'}); }
+      const [s, a] = play.dataset.play.split(':').map(Number);
+      const el = document.getElementById(`ayah-${s}-${a}`);
+      if (el) { el.classList.add('playing'); el.scrollIntoView({behavior:'smooth', block:'center'}); }
       const pad = x => String(x).padStart(3,'0');
-      currentAudio = new Audio(`https://everyayah.com/data/Alafasy_128kbps/${pad(surah)}${pad(ayah)}.mp3`);
+      currentAudio = new Audio(`https://everyayah.com/data/Alafasy_128kbps/${pad(s)}${pad(a)}.mp3`);
       currentAudio.play().catch(() => {});
-      currentAudio.onended = () => { element?.classList.remove('playing'); currentAudio = null; };
-      if (autoScrolling) toggleAutoScroll(false);
-    }
-
-    async function copyAyah(surah, ayah, button) {
-      const element = document.getElementById(`ayah-${surah}-${ayah}`);
-      const text = `${element.querySelector('.arabic').textContent}\n\n${element.querySelector('.translation-ur')?.textContent || ''}\n\n(${element.querySelector('.ref').textContent})`;
-      try { await navigator.clipboard.writeText(text); const old = button.textContent; button.textContent = '✅ کاپی ہو گیا'; setTimeout(() => button.textContent = old, 1500); } catch { button.textContent = 'کاپی ناکام'; }
-    }
-
-    reader.addEventListener('click', event => {
-      const play = event.target.closest('[data-play]');
-      const copy = event.target.closest('[data-copy]');
-      if (play) { const [s,a] = play.dataset.play.split(':').map(Number); playAyah(s,a); }
-      if (copy) { const [s,a] = copy.dataset.copy.split(':').map(Number); copyAyah(s,a,copy); }
+      currentAudio.onended = () => { el?.classList.remove('playing'); currentAudio = null; };
     });
 
     const select = document.getElementById('surahSelect');
-    NAMES.forEach((name, i) => { const option = document.createElement('option'); option.value = i + 1; option.textContent = `${i + 1}. ${name}`; select.appendChild(option); });
+    NAMES.forEach((name, i) => {
+      const opt = document.createElement('option');
+      opt.value = i + 1;
+      opt.textContent = `${i + 1}. ${name}`;
+      select.appendChild(opt);
+    });
     select.addEventListener('change', () => loadSurah(select.value));
 
-    (async function init() { setFontSize(localStorage.getItem('kitabu_font') || 'm'); select.value = 1; await loadSurah(1); })();
+    (async function init() {
+      setFontSize(localStorage.getItem('kitabu_font') || 'm');
+      select.value = 1;
+      await loadSurah(1);
+    })();
   </script>
 </body>
 </html>
