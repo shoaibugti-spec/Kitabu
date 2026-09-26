@@ -15,7 +15,6 @@
 
 <main id="app">
 
-  <!-- مرکزی مینیو -->
   <section id="view-menu" class="view active">
     <div class="menu-grid">
       <button class="menu-btn" onclick="location.href='reader.html'">
@@ -38,19 +37,6 @@
     <p id="status-line" class="status-line"></p>
   </section>
 
-  <!-- پڑھنا -->
-  <section id="view-read" class="view">
-    <button class="back-btn" data-back>⬅ واپس</button>
-    <h2>📖 پڑھنا</h2>
-    <div class="row">
-      <label>سورہ نمبر (1-114):</label>
-      <input type="number" id="surah-input" min="1" max="114" value="1">
-      <button id="load-surah-btn">لوڈ کریں</button>
-    </div>
-    <div id="surah-result" class="verses-list"></div>
-  </section>
-
-  <!-- سننا -->
   <section id="view-listen" class="view">
     <button class="back-btn" data-back>⬅ واپس</button>
     <h2>🎧 سننا</h2>
@@ -60,11 +46,10 @@
       <label>آیت:</label>
       <input type="number" id="listen-ayah" min="1" value="1">
       <select id="reciter-select">
-        <option value="alafasy">العفاسی</option>
-        <option value="husary">الحصری</option>
-        <option value="sudais">السدیس</option>
-        <option value="minshawi">المنشاوی</option>
-        <option value="abdulbasit">عبدالباسط</option>
+        <option value="Alafasy_128kbps">العفاسی</option>
+        <option value="Husary_128kbps">الحصری</option>
+        <option value="Minshawy_Murattal_128kbps">المنشاوی</option>
+        <option value="Abdul_Basit_Murattal_192kbps">عبدالباسط</option>
       </select>
       <button id="play-btn">▶️ سنیں</button>
     </div>
@@ -72,11 +57,10 @@
     <div id="listen-verse" class="verses-list"></div>
   </section>
 
-  <!-- سیکھنا -->
   <section id="view-learn" class="view">
     <button class="back-btn" data-back>⬅ واپس</button>
     <h2>🎓 سیکھنا</h2>
-    <p class="hint">یہاں آپ کوئی بھی آیت کھول کر عربی متن پر غور کر سکتے ہیں، تلاوت سن سکتے ہیں، اور ترجمے سے موازنہ کر کے حفظ/تجوید کی مشق کر سکتے ہیں۔</p>
+    <p class="hint">کوئی بھی سورہ کھولیں، عربی متن پڑھیں، تلاوت سنیں، ترجمے سے موازنہ کریں۔</p>
     <div class="row">
       <label>سورہ:</label>
       <input type="number" id="learn-surah" min="1" max="114" value="1">
@@ -85,7 +69,6 @@
     <div id="learn-result" class="verses-list"></div>
   </section>
 
-  <!-- پوچھنا -->
   <section id="view-ask" class="view">
     <button class="back-btn" data-back>⬅ واپس</button>
     <h2>💬 پوچھنا</h2>
