@@ -1,107 +1,65 @@
-# کِتٰٰبُ — Kitabu
+# کِتٰبُ — Kitabu
 
 **پورا قرآن، صرف قرآن**
 
-Pure Quran AI — Read, Listen, Learn, Ask. Only Quran, no tafsir, no hadith.
+قرآن پڑھنے، سننے، سیکھنے اور آیات کے حوالوں سے سوال پوچھنے کے لیے اردو-first مطالعہ گاہ۔
 
----
+## موجودہ ویب ایپ
 
-## کیا ہے یہ؟
+- **Full-stack preview:** https://3000-izrsz9ipsidevtk9i8h8j-a5468c2f.us4.manus.computer/
+- **GitHub Pages URL:** https://shoaibugti-spec.github.io/Kitabu/ — Pages workflow/hosting دستیاب ہونے کے بعد اسی public path پر static fallback دکھایا جا سکتا ہے۔
 
-ایک ایسی ایپ جو صرف قرآن کو بنیاد بناتی ہے۔ کوئی تفسیر، حدیث، بخاری، یا انسانی رائے شامل نہیں۔ صرف عربی قرآن، اس کے تراجم، اور آیات کا حوالہ۔
+`fullstack-app/` موجودہ full-stack ایپ کا canonical source ہے۔ WebDev preview میں frontend، backend اور Manus-hosted language model ایک ہی origin کے تحت چلتے ہیں؛ repository میں API keys یا user secrets شامل نہیں کیے گئے۔ مستقل custom domain اور مستقل backend publication کے لیے الگ hosting پر project publish/configure کرنا ہوگا۔
 
-## 4 بٹن
+## چار بنیادی حصے
 
-- 📖 **پڑھنا** — قرآن پڑھنا، عربی + ترجمہ
-- 🎧 **سننا** — تلاوت سننا
-- 🎓 **سیکھنا** — قاعدہ، تجوید، عربی، حفظ
-- 💬 **پوچھنا** — قرآن سے سوال، دعویٰ کی تصدیق
+1. **قرآن پڑھیں** — 114 سورتیں؛ عثمانی رسم الخط، اردو ترجمۂ فتح محمد جالندھری اور Saheeh International کا انگریزی ترجمہ۔
+2. **تلاوت سنیں** — EveryAyah کے آڈیو سے چار قراء، آیت بہ آیت اور اختیاری مسلسل پلے بیک۔
+3. **قرآن سیکھیں** — ابتدائی حرکات کی مختصر مشق اور منتخب سورت کے ساتھ سننے/پڑھنے کی مشق۔ یہ مکمل تجوید کورس یا استاد کا بدل نہیں۔
+4. **قرآن سے پوچھیں** — GPT-5-mini متعلقہ حاصل شدہ آیات، عربی متن اور معلوم تراجم کی بنیاد پر مختصر جواب دیتا ہے؛ citations صرف retrieved verse IDs میں سے منتخب اور server-side validate ہوتے ہیں۔ کوئی متعلقہ آیت نہ ملے تو غیرمصدقہ جواب بنانے کے بجائے اس کی وضاحت کی جاتی ہے۔ یہ AI مطالعہ رہنمائی ہے، تفسیر یا فتویٰ نہیں۔
 
-## اصول
-
-- صرف قرآن، کوئی تفسیر نہیں
-- عربی متن صرف Tanzil (verified) سے
-- AI خود جواب نہیں لکھتا — صرف ڈیٹا بیس سے دکھاتا ہے
-- نہ ملے تو کہے: "اس مخصوص موضوع پر صریح آیت نہیں ملی"
-
-## فوری آغاز
-
-### 1. ضروریات
-- Python 3.11+
-- Git
-
-### 2. ڈیٹا ڈاؤن لوڈ
+## Full-stack project میں کام
 
 ```bash
-cd backend/data
-python download.py
-python convert.py
+cd fullstack-app
+pnpm install
+pnpm check
+pnpm test
+pnpm build
+pnpm dev
 ```
 
-### 3. بیک اینڈ چلائیں
+Node.js 22 اور pnpm درکار ہیں۔ `pnpm test` قرآن data checks، 114 سورت/6236 آیات کی integrity، Urdu/Arabic topic retrieval اور audio path کو verify کرتا ہے۔ `pnpm build` web assets اور server bundle بناتا ہے اور validated Quran corpus کو `dist/data/quran.json` میں package کرتا ہے۔
+
+### Quran dataset refresh
 
 ```bash
-pip install -r requirements.txt
-cd backend
-python -m uvicorn main:app --reload
+cd fullstack-app
+node scripts/fetch-quran.mjs
+pnpm test
+pnpm build
 ```
 
-### 4. فرنٹ اینڈ کھولیں
+Download script AlQuran.Cloud کے تین aligned editions استعمال کرتا ہے، 114 سورتوں/6236 آیات کی alignment اور آخری آیت کی جانچ کے بعد ایک تقریباً 4 MiB corpus بناتا ہے۔ وہ raw Quran corpus GitHub Pages کے `frontend/` میں نہیں ڈالتا۔
 
-براؤزر میں کھولیں: `frontend/index.html`
+### WebDev environment اور AI
 
-یا:
+Production-style AI answer Manus WebDev server پر Manus کا server-side language-model integration استعمال کرتا ہے۔ API credentials یا Manus secrets GitHub میں شامل نہ کریں۔ صرف static GitHub Pages اس backend یا secret فراہم نہیں کر سکتا۔ Code کو WebDev سے باہر چلانے پر AI جواب فعال نہیں ہوگا، جب تک backend کو server-side model provider credentials اور hosting میں نہ دیا جائے۔
 
-```bash
-cd frontend
-python -m http.server 5500
-```
+## Source attribution and use
 
-پھر: http://localhost:5500
+- **Arabic/Quran text:** [AlQuran.Cloud](https://alquran.cloud/api) — Uthmani edition؛ upstream terms میں Arabic text کے sources، بشمول Tanzil.net اور Quran Academy، کا acknowledgment دیا گیا ہے۔
+- **Urdu translation:** [Fateh Muhammad Jalandhry](https://alquran.cloud/edition/ur.jalandhry).
+- **English translation:** Saheeh International.
+- **Recitation audio:** [EveryAyah.com](https://everyayah.com/). Reciters/rightsholders retain their respective audio rights; audio is linked for personal and educational listening.
+- Upstream terms and source attribution: [AlQuran.Cloud terms](https://alquran.cloud/terms-and-conditions).
 
-## API Endpoints
+Arabic text کو اسی Uthmani صورت، حرکات اور املاء کے ساتھ دکھانے کی کوشش کی جاتی ہے۔ ترجمہ قرآن کے اصل عربی متن کا بدل نہیں۔
 
-| Method | Endpoint | تفصیل |
-|---|---|---|
-| GET | /health | صحت چیک |
-| GET | /menu | 4 بٹن |
-| POST | /ask | قرآن سے سوال |
-| POST | /verify | دعویٰ کی تصدیق |
-| GET | /surah/{n} | پوری سورہ |
-| GET | /audio/{s}/{a} | تلاوت URL |
+## Original static prototype
 
-## ڈیٹا کے ماخذ
+`frontend/` اور `backend/` original static/Python prototype محفوظ رکھتے ہیں۔ انہیں موجودہ AI website نہ سمجھیں: GitHub Pages پر Python چل نہیں سکتا، browser-only copy کا AI حقیقی language model نہیں ہے، اور اس prototype کے data schema/build instructions اب اس full-stack implementation سے مختلف ہیں۔
 
-- عربی متن: Tanzil.net
-- تراجم: Tanzil.net / fawazahmed0/quran-api
-- تلاوت: EveryAyah.com
-- روٹس: Quranic Arabic Corpus
+## Copyright
 
-## لائسنس
-
-MIT — کوڈ کے لیے۔
-قرآن کا متن: Tanzil terms (غیر تجارتی، بغیر ترمیم کے تقسیم کی شرائط لاگو ہوتی ہیں — از راہ کرم https://tanzil.net/docs/quran_text_license ملاحظہ کریں)۔
-
----
-
-نیت: صرف قرآن کی خدمت۔
-
-
-## Render deployment
-
-Repository root کو Render Web Service کے طور پر استعمال کریں۔ `render.yaml` میں درست build، start اور health-check commands موجود ہیں:
-
-```text
-Build: pip install -r requirements.txt && cd backend/data && python download.py && python convert.py
-Start: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
-Health: /health
-```
-
-اہم: repository root پر `pip install -r ../requirements.txt` اور `uvicorn main:app` استعمال نہ کریں؛ requirements root میں ہے اور FastAPI app `backend.main:app` میں ہے۔ Build کے دوران Quran data تیار ہوتا ہے، اس لیے Render Shell میں دوبارہ download/convert چلانے کی ضرورت نہیں۔
-
-Render پر deploy ہونے کے بعد frontend: `/app`
-
-
-## Quran reader
-
-`/app/reader.html` میں سفید reading mode، 114 سورتوں کا انتخاب، چار font sizes، 1x/2x/3x auto-scroll، touch/pointer drag pause-resume، per-ayah EveryAyah audio اور copy control موجود ہیں۔ Main menu کا **پڑھنا** بٹن اسی reader پر لے جاتا ہے۔
+Application code: MIT — `LICENSE` دیکھیے۔ Qur’anic text, translations اور recitations پر ان کے متعلقہ source/rights-holders کی attribution اور شرائط لاگو ہوتی ہیں۔
