@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: kitabu
-    runtime: python
-    buildCommand: pip install -r requirements.txt && cd backend/data && python download.py && python convert.py
-    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
-    healthCheckPath: /health
