@@ -19,7 +19,9 @@ describe("Quran corpus", () => {
     const fatiha = await getSurah(1);
     const baqarah = await getSurah(2);
     expect(fatiha?.surah.arabicName).toBeTruthy();
+    expect(fatiha?.surah.ayahCount).toBe(7);
     expect(fatiha?.verses).toHaveLength(7);
+    expect(baqarah?.surah.ayahCount).toBe(286);
     expect(baqarah?.verses).toHaveLength(286);
     expect(await getSurah(0)).toBeNull();
   });

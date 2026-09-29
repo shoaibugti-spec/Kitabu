@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowLeft, BookOpen, BookOpenText, Check, ChevronLeft, CircleHelp,
-  GraduationCap, Headphones, LoaderCircle, MessageCircleQuestion, Pause,
-  Play, Search, Send, ShieldCheck, Sparkles, Volume2,
+  ArrowLeft, Bookmark, BookmarkCheck, BookOpen, BookOpenText, Check,
+  ChevronLeft, CircleHelp, GraduationCap, Headphones, LoaderCircle, Menu,
+  MessageCircleQuestion, Pause, Play, Search, Send, ShieldCheck, Sparkles,
+  Volume2, X,
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { Link } from "wouter";
+import { filterSurahs, parseSavedSurahs, toggleSavedSurah } from "@/lib/surahCatalog";
 
 type View = "home" | "read" | "listen" | "learn" | "ask";
 type Verse = {
@@ -138,13 +141,37 @@ function ErrorState({ message }: { message: string }) {
 
 function HomePage({
   onOpen,
+  onSelectSurah,
   surahs,
   verseCount,
 }: {
   onOpen: (view: View) => void;
+  onSelectSurah: (number: number) => void;
   surahs: Surah[];
   verseCount: number;
 }) {
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<"all" | "meccan" | "medinan" | "saved">("all");
+  const [savedSurahs, setSavedSurahs] = useState<number[]>([]);
+  const [visibleCount, setVisibleCount] = useState(12);
+
+  useEffect(() => {
+    try {
+      setSavedSurahs(parseSavedSurahs(window.localStorage.getItem("kitabu-saved-surahs")));
+    } catch {
+      setSavedSurahs([]);
+    }
+  }, []);
+
+  const toggleSaved = (number: number) => {
+    const next = toggleSavedSurah(savedSurahs, number);
+    setSavedSurahs(next);
+    try { window.localStorage.setItem("kitabu-saved-surahs", JSON.stringify(next)); } catch { /* Browser storage may be unavailable. */ }
+  };
+
+  const visibleSurahs = filterSurahs(surahs, query, filter, savedSurahs);
+  const shownSurahs = visibleSurahs.slice(0, visibleCount);
+
   const cards: Array<{ view: View; label: string; English: string; detail: string; tone: string }> = [
     { view: "read", label: "قرآن پڑھیں", English: "READ", detail: "عربی متن، اردو اور انگریزی ترجمہ", tone: "sage" },
     { view: "listen", label: "تلاوت سنیں", English: "LISTEN", detail: "چار معروف قراء، آیت بہ آیت", tone: "sand" },
@@ -153,17 +180,19 @@ function HomePage({
   ];
   return (
     <>
-      <section className="hero-grid">
+      <section className="catalog-hero">
         <div className="hero-copy">
-          <span className="hero-kicker"><span className="live-dot" /> قرآن سے قریب ہونے کا ایک پُرسکون راستہ</span>
-          <h1>پڑھیے۔ سنیے۔<br /><em>سمجھیے۔</em></h1>
-          <p className="hero-text">قرآنِ کریم آپ کی اپنی رفتار سے — مستند عربی متن، تراجم، تلاوت، سیکھنے کا سادہ آغاز، اور آیات کے حوالوں کے ساتھ سوال جواب۔</p>
-          <div className="hero-actions">
-            <button type="button" className="button button-primary" onClick={() => onOpen("read")}>قرآن پڑھنا شروع کریں <ChevronLeft size={17} /></button>
-            <span className="hero-note"><ShieldCheck size={15} /> AI جواب میں آیت کا حوالہ ضروری</span>
-          </div>
+          <span className="hero-kicker"><span className="live-dot" /> قرآنِ کریم · آپ کی مطالعہ گاہ</span>
+          <h1>قرآن پڑھیں،<br /><em>اپنی رفتار سے۔</em></h1>
+          <p className="hero-text">114 سورتیں، مستند عربی متن اور تراجم۔ اپنی اگلی سورت تلاش کریں یا چاروں مطالعاتی راستوں میں سے انتخاب کریں۔</p>
+          <label className="catalog-search">
+            <Search size={19} aria-hidden="true" />
+            <span className="sr-only">سورت تلاش کریں</span>
+            <input value={query} onChange={(event) => { setQuery(event.target.value); setVisibleCount(12); }} placeholder="سورت کا نام یا نمبر تلاش کریں" aria-label="سورتوں میں تلاش" />
+            {query ? <button type="button" onClick={() => setQuery("")} aria-label="تلاش صاف کریں"><X size={16} /></button> : null}
+          </label>
         </div>
-        <div className="hero-verse" aria-label="قرآن کی آیت">
+        <div className="hero-verse catalog-verse" aria-label="قرآن کی آیت">
           <span className="verse-ornament">۞</span>
           <p className="hero-arabic" lang="ar" dir="rtl">وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ فَهَلْ مِن مُّدَّكِرٍ</p>
           <p className="hero-translation">اور ہم نے قرآن کو نصیحت حاصل کرنے کے لیے آسان کر دیا ہے، تو کوئی ہے نصیحت حاصل کرنے والا؟</p>
@@ -174,7 +203,7 @@ function HomePage({
 
       <section className="features-section">
         <div className="section-title-row">
-          <div><span className="eyebrow">آپ کا مطالعہ</span><h2>اپنی راہ منتخب کریں</h2></div>
+          <div><span className="eyebrow">چار آسان راستے</span><h2>آپ کیا کرنا چاہتے ہیں؟</h2></div>
           <span className="section-arabic" lang="ar">اقْرَأْ</span>
         </div>
         <div className="feature-grid">
@@ -190,6 +219,49 @@ function HomePage({
           ))}
         </div>
       </section>
+
+      <section className="surah-catalog" aria-labelledby="surah-catalog-heading">
+        <div className="catalog-heading-row">
+          <div><span className="eyebrow">قرآن کا ذخیرہ</span><h2 id="surah-catalog-heading">سورتوں کا انتخاب</h2></div>
+          <span className="catalog-count">{visibleSurahs.length} سورتیں</span>
+        </div>
+        <div className="catalog-filters" role="group" aria-label="سورتوں کی قسم منتخب کریں">
+          {([
+            ["all", "تمام سورتیں"], ["meccan", "مکی"], ["medinan", "مدنی"], ["saved", `محفوظ (${savedSurahs.length})`],
+          ] as const).map(([value, label]) => (
+            <button key={value} type="button" className={filter === value ? "catalog-filter active" : "catalog-filter"} aria-pressed={filter === value} onClick={() => { setFilter(value); setVisibleCount(12); }}>{label}</button>
+          ))}
+        </div>
+        {visibleSurahs.length ? (
+          <div className="surah-grid">
+            {shownSurahs.map((surah, index) => {
+              const saved = savedSurahs.includes(surah.number);
+              return (
+                <article className="surah-tile" key={surah.number}>
+                  <div className={`surah-cover cover-tone-${index % 6}`}>
+                    <span className="surah-cover-number">{String(surah.number).padStart(2, "0")}</span>
+                    <span className="surah-cover-ornament" aria-hidden="true">۞</span>
+                    <span className="surah-cover-arabic" lang="ar">{surah.arabicName}</span>
+                    <span className="surah-cover-english">{surah.englishName}</span>
+                    <button type="button" className={saved ? "save-surah saved" : "save-surah"} onClick={() => toggleSaved(surah.number)} aria-label={saved ? `${surah.arabicName} محفوظ فہرست سے ہٹائیں` : `${surah.arabicName} بعد کے لیے محفوظ کریں`} aria-pressed={saved}>
+                      {saved ? <BookmarkCheck size={16} /> : <Bookmark size={16} />}
+                    </button>
+                  </div>
+                  <div className="surah-tile-meta">
+                    <div className="surah-tile-title"><h3>{surah.arabicName}</h3><span>{surah.englishNameTranslation}</span></div>
+                    <span className="surah-ayah-count">{surah.ayahCount} آیات · {surah.revelationType === "Meccan" ? "مکی" : "مدنی"}</span>
+                    <button type="button" className="surah-open-button" onClick={() => { onSelectSurah(surah.number); onOpen("read"); }}>پڑھنا شروع کریں <ChevronLeft size={16} /></button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="catalog-empty"><BookOpen size={21} /><span>{filter === "saved" && !query ? "ابھی کوئی سورت محفوظ نہیں۔ پسندیدہ سورت پر نشان لگائیں۔" : "اس تلاش سے کوئی سورت نہیں ملی۔"}</span></div>
+        )}
+        {visibleCount < visibleSurahs.length ? <button type="button" className="catalog-more" onClick={() => setVisibleCount((count) => count + 12)}>مزید سورتیں دکھائیں <span>({visibleSurahs.length - visibleCount} باقی)</span><ChevronLeft size={16} /></button> : null}
+      </section>
+
       <section className="stats-strip" aria-label="قرآن کے اعداد و شمار">
         <div><span className="stat-number">{surahs.length || 114}</span><span>سورتیں</span></div>
         <i />
@@ -249,6 +321,7 @@ function LearnPage({
 
 export default function Home() {
   const [view, setView] = useState<View>("home");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedSurah, setSelectedSurah] = useState(1);
   const [audioAyah, setAudioAyah] = useState(1);
   const [reciter, setReciter] = useState<Reciter["id"]>("alafasy");
@@ -283,6 +356,7 @@ export default function Home() {
 
   const openView = (next: View) => {
     setView(next);
+    setMobileMenuOpen(false);
     if (next !== "listen" && audioRef.current) audioRef.current.pause();
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -338,21 +412,29 @@ export default function Home() {
   return (
     <div className="app-shell" dir="rtl">
       <header className="site-header">
-        <button type="button" className="brand-lockup" onClick={() => openView("home")} aria-label="کِتٰبُ ہوم">
+        <button type="button" className="menu-toggle" onClick={() => setMobileMenuOpen((open) => !open)} aria-label={mobileMenuOpen ? "مینو بند کریں" : "مینو کھولیں"} aria-expanded={mobileMenuOpen}>
+          {mobileMenuOpen ? <X size={21} /> : <Menu size={22} />}
+        </button>
+          <button type="button" className="brand-lockup" onClick={() => openView("home")} aria-label="قرآن مطالعہ گاہ">
           <span className="brand-mark">ک</span>
-          <span className="brand-text"><b>کِتٰبُ</b><small>پورا قرآن، صرف قرآن</small></span>
+          <span className="brand-text"><b>کِتٰبُ</b><small>قرآن مطالعہ گاہ</small></span>
         </button>
         <nav className="desktop-nav" aria-label="مرکزی نیویگیشن">
           {(["read", "listen", "learn", "ask"] as View[]).map((item) => (
             <button key={item} type="button" className={view === item ? "nav-active" : ""} onClick={() => openView(item)}>{titleForView[item]}</button>
           ))}
         </nav>
-        <button type="button" className="header-cta" onClick={() => openView("ask")}><Sparkles size={15} /> سوال پوچھیں</button>
+        <div className="header-actions">
+          <Link href="/" className="book-catalog-link"><BookOpen size={15} /> کتابوں کا catalog</Link>
+          <button type="button" className="quick-listen" onClick={() => openView("listen")} aria-label="تلاوت سنیں"><Play size={18} fill="currentColor" /></button>
+          <button type="button" className="header-cta" onClick={() => openView("ask")}><Sparkles size={15} /> سوال پوچھیں</button>
+        </div>
+        {mobileMenuOpen ? <nav className="mobile-menu-popover" aria-label="موبائل مینو">{(["read", "listen", "learn", "ask"] as View[]).map((item) => <button key={item} type="button" onClick={() => openView(item)}>{iconFor(item)}<span>{titleForView[item]}</span></button>)}</nav> : null}
       </header>
 
       <main className="main-content">
         {view === "home" ? (
-          <HomePage onOpen={openView} surahs={surahs} verseCount={catalog.data?.verseCount ?? 0} />
+          <HomePage onOpen={openView} onSelectSurah={selectSurah} surahs={surahs} verseCount={catalog.data?.verseCount ?? 0} />
         ) : (
           <>
             <button type="button" className="back-link" onClick={() => openView("home")}><ArrowLeft size={16} /> مرکزی صفحہ</button>

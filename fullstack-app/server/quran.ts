@@ -37,6 +37,11 @@ export async function getCorpus(): Promise<QuranCorpus> {
       if (data.surahs?.length !== 114 || data.verses?.length !== 6236) {
         throw new Error("Quran corpus failed validation (expected 114 surahs and 6236 ayahs).");
       }
+      const counts = Array(115).fill(0) as number[];
+      for (const verse of data.verses) counts[verse.surah] += 1;
+      for (const surah of data.surahs) {
+        if (!Number.isInteger(surah.ayahCount)) surah.ayahCount = counts[surah.number] ?? 0;
+      }
       return data;
     }).catch((error) => {
       corpusPromise = undefined;
